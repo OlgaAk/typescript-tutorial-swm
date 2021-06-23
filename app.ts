@@ -1,2 +1,43 @@
+enum Role {
+  ADMIN,
+  USER,
+} // enum
 
-console.log("hi there");
+const person: {
+  name: string;
+  hobbies: string[];
+  role: [number, string]; //tuple
+  role2: Role;
+} = {
+  name: "john",
+  hobbies: ["sports", "cooking"],
+  role: [1, "admin"],
+  role2: Role.ADMIN,
+};
+
+// union type
+let x: string | number;
+x = 2;
+x = "";
+
+//type alias
+type Combinable = string | number;
+type Combinable2 = "as-number" | "as-text"; //literal types
+
+function add(num1: number, num2: number): number {
+  return num1 + num2;
+}
+
+function printGreeting(name: string): void {
+  console.log("hi there " + name);
+}
+
+let fun: (a: string) => void; // Function type
+fun = printGreeting;
+
+let userName: string;
+
+let userInput: unknown; // unkonwn type
+if (typeof userInput === "string") {
+  userName = userInput;
+}
