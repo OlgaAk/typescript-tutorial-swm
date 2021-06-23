@@ -41,3 +41,10 @@ let userInput: unknown; // unkonwn type
 if (typeof userInput === "string") {
   userName = userInput;
 }
+
+function generateError(message: string, code: number): never {
+  //type never (crash)
+  throw { message, errorCode: code };
+}
+
+generateError("an error occured!", 500);
