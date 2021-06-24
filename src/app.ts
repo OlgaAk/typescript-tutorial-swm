@@ -48,3 +48,10 @@ function generateError(message: string, code: number): never {
 }
 
 generateError("an error occured!", 500);
+
+
+
+
+///// commands
+// tsc --init -> tsconfig.json
+// tsc --w (watch mode)
