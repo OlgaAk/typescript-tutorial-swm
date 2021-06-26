@@ -1,3 +1,35 @@
+// Validation 
+interface Validatable{
+    value: string | number,
+    required?: boolean,
+    minLength?: number,
+    maxLength?: number,
+    min?: number,
+    max?: number
+}
+
+function validate(input: Validatable): boolean{
+    let isValid = true;
+    if(input.required){
+        isValid = isValid && input.value.toString().trim().length !== 0
+    }
+    if(input.minLength != null && typeof input.value === "string"){
+        isValid = isValid && input.value.trim().length >= input.minLength
+    }
+    if(input.maxLength != null && typeof input.value === "string"){
+        isValid = isValid && input.value.trim().length <= input.maxLength
+    }
+    if(input.min != null && typeof input.value === "number"){
+        isValid = isValid && input.value >= input.min
+        console.log(isValid,  input.value, input.min)
+    }
+    if(input.max != null && typeof input.value === "number"){
+        isValid = isValid && input.value <= input.max
+    }
+    return isValid;
+}
+
+
 // autobind decorator
 function autobind(_: any, _2: string, descriptor: PropertyDescriptor){
     const originalMethod = descriptor.value;
@@ -38,14 +70,41 @@ class ProjectInput {
         this.attach();
     }
 
+    private gatherUserInput() : [string, string, number] | void {
+        const enteredTitle =  this.titleInputElement.value;
+        const enteredDescription =  this.descriptionInputElement.value;
+        const enteredPeople =  this.peopleInputElement.value;
+        if(validate({value: enteredTitle, required: true, minLength: 4, maxLength: 20}) &&
+            validate({value: enteredDescription, required: true, minLength: 4, maxLength: 100}) &&
+            validate({value: +enteredPeople, required: true, min: 1, max: 5})) {
+                return [enteredTitle, enteredDescription, +enteredPeople];
+        }
+        else {
+            alert("not valid");
+            return;
+        }
+    }
+
+
+    private clearInputs(){
+        this.titleInputElement.value = "";
+        this.descriptionInputElement.value = "";
+        this.peopleInputElement.value = "";
+    }
+
+    @autobind
     private sumbitHandler(event: Event){
         event.preventDefault();
-        console.log(this.titleInputElement.value);
-
+        const userInput = this.gatherUserInput();
+        if(Array.isArray(userInput)){
+            const [title, desc, people] = userInput;
+            console.log(title,desc, people);
+            this.clearInputs();
+        }   
     }
 
     private configure(){
-        this.element.addEventListener("submit", this.sumbitHandler.bind(this));
+        this.element.addEventListener("submit", this.sumbitHandler);
     }
 
     private attach(){
