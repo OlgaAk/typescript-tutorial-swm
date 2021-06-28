@@ -139,6 +139,26 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
   abstract configure(): void;
 }
 
+// Project Item class
+class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
+  private project: Project;
+
+  constructor(hostId: string, project: Project) {
+    super("single-project", hostId, false, project.id);
+    this.project = project;
+
+    this.renderContent();
+  }
+
+  renderContent(): void {
+    this.element.querySelector("h2")!.textContent = this.project.title;
+    this.element.querySelector("h3")!.textContent =
+      "Number of people: " + this.project.people.toString();
+    this.element.querySelector("p")!.textContent = this.project.description;
+  }
+  configure(): void {}
+}
+
 // ProjectList Class
 class ProjectList extends Component<HTMLDivElement, HTMLElement> {
   assignedProjects: Project[];
@@ -148,6 +168,12 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
 
     this.assignedProjects = [];
 
+    this.configure();
+
+    this.renderContent();
+  }
+
+  configure() {
     projectState.addListener((projects: any[]) => {
       const relevantProjects = projects.filter((p) => {
         if (this.type === "active") {
@@ -158,11 +184,7 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
       this.assignedProjects = relevantProjects;
       this.renderProjectList();
     });
-
-    this.renderContent();
   }
-
-  configure() {}
 
   renderContent() {
     this.element.querySelector(
@@ -178,10 +200,8 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
       `${this.type}-projects-list`
     ) as HTMLUListElement;
     list.innerHTML = "";
-    for (let project of this.assignedProjects) {
-      let li = document.createElement("li");
-      li.textContent = project.title;
-      list.append(li);
+    for (const project of this.assignedProjects) {
+      new ProjectItem(this.element.querySelector("ul")!.id, project);
     }
   }
 }
