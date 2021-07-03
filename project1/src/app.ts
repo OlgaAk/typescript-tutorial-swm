@@ -15,6 +15,7 @@ enum ProjectStatus {
   Active,
   Finished,
 }
+
 class Project {
   constructor(
     public id: string,
@@ -60,8 +61,20 @@ class ProjectState extends BaseState<Project> {
       ProjectStatus.Active
     );
     this.projects.push(newProject);
+    this.notifyListeners();
+  }
+
+  notifyListeners(): void {
     for (const listener of this.listeners) {
       listener(this.projects.slice());
+    }
+  }
+
+  changeProjectStatus(projectId: string, status: ProjectStatus): void {
+    const project = this.projects.find((p) => p.id === projectId);
+    if (project && project.status != status) {
+      project.status = status;
+      this.notifyListeners();
     }
   }
 }
@@ -222,7 +235,11 @@ class ProjectList
   dropHandler(event: DragEvent): void {
     const listEl = this.element.querySelector("ul")!;
     listEl.classList.remove("droppable");
-    console.log(event.dataTransfer!.getData("text")); // dataTransef data not shown in browser consoles
+    const id = event.dataTransfer!.getData("text"); // dataTransef data not shown in browser consoles
+    projectState.changeProjectStatus(
+      id,
+      this.type === "active" ? ProjectStatus.Active : ProjectStatus.Finished
+    );
   }
   @autobind
   dragLeaveHandler(_: DragEvent): void {
