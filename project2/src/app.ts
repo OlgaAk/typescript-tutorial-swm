@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GOOGLE_API_KEY } from "../config";
+import { GOOGLE_API_KEY } from "./config";
 
 const form = document.querySelector("form")!;
 const addressInput = document.querySelector("#address")! as HTMLInputElement;
@@ -8,6 +8,7 @@ const url = `https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amph
 
 type GoogleGeocodingResponse = {
   results: { geometry: { location: { lat: number; lng: number } } }[];
+  status: "OK" | "ZERO_RESULTS";
 };
 
 function searchAddressHandler(event: Event) {
@@ -18,11 +19,16 @@ function searchAddressHandler(event: Event) {
   axios
     .get<GoogleGeocodingResponse>(url)
     .then((response) => {
+      if (response.data.status !== "OK") {
+        throw new Error("Could not fetch location");
+      }
       const coordinates = response.data.results[0].geometry.location;
       console.log(coordinates);
-      console.log("12");
     })
-    .catch((err) => console.log(err));
+    .catch((err: Error) => {
+      alert(err.message);
+      console.log(err);
+    });
 }
 
 form.addEventListener("submit", searchAddressHandler);
