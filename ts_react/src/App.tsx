@@ -9,14 +9,19 @@ const App: React.FC = () => {
   function addTodoHandler(text: string) {
     setTodos((prevTodos) => [
       ...prevTodos,
-      { id: todos.length.toString(), text: text },
+      { id: Math.random().toString(), text: text },
     ]);
+  }
+
+  function deleteTodoHandler(id: string) {
+    const updatedTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(updatedTodos);
   }
 
   return (
     <div className="App">
       <NewTodo onAddTodo={addTodoHandler} />
-      <TodoList items={todos} />
+      <TodoList items={todos} onDeleteTodo={deleteTodoHandler} />
     </div>
   );
 };
